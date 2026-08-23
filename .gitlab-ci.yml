@@ -1,0 +1,49 @@
+stages:
+  - test
+  - build
+  - deploy
+
+.aws_oidc:
+
+  # Tell GitLab to create an AWS login token for this job.
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      # AWS checks this value before allowing access.
+      aud: sts.amazonaws.com
+
+  variables:
+    # IAM Role stored in GitLab CI/CD Variables.
+    AWS_ROLE_ARN: "${ROLE_ARN}"
+
+    # Temporary session name shown in AWS logs.
+    AWS_ROLE_SESSION_NAME: "gitlab-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+
+    # File where we save the login token.
+    AWS_WEB_IDENTITY_TOKEN_FILE: "/tmp/gitlab-oidc-token"
+
+  before_script:
+    # Save the GitLab token into a file.
+    # Terraform will use this file to log in to AWS.
+    - printf '%s' "${GITLAB_OIDC_TOKEN}" > "${AWS_WEB_IDENTITY_TOKEN_FILE}"
+
+.requirements:
+  image:
+    - name: python:3.12-alpine
+    - entrypoint: [""]
+  before_script:
+    - python --version
+    - python -m pip install -r requirements.txt
+
+pylint_job:
+  stage: test
+  extends: .requirements
+  script:
+    - echo "Analyzing the source code"
+    - pylint app/ tests/ run.py
+
+pytest_job:
+  stage: test
+  extends: .requirements
+  script:
+    - echo "Running unit tests"
+    - python -m pytest -v
