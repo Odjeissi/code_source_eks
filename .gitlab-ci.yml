@@ -27,9 +27,7 @@ stages:
     - printf '%s' "${GITLAB_OIDC_TOKEN}" > "${AWS_WEB_IDENTITY_TOKEN_FILE}"
 
 .requirements:
-  image:
-    - name: python:3.12-alpine
-    - entrypoint: [""]
+  image: python:3.12-alpine
   before_script:
     - python --version
     - python -m pip install -r requirements.txt
