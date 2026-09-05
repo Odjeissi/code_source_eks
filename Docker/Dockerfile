@@ -11,4 +11,4 @@ COPY ../run.py .
 
 EXPOSE 5000
 
-CMD [ "pyhton", "run.py"]
+CMD [ "python", "run.py"]
