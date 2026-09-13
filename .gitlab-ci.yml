@@ -80,12 +80,14 @@ dev_deploy:
   stage: deploy
   before_script:
     # 1. Install openssh-client and git
-    - apk add --no-cache openssh-client git yq
+    - apk add --no-cache openssh-client git yq-go
 
     # 2. Start the ssh-agent in the background
     - eval $(ssh-agent -s)
 
     # 3. Load private SSH key
+    - test -n "$SSH_PRIVATE_KEY" || (echo "SSH_PRIVATE_KEY is not available" && exit 1)
+    - test -f "$SSH_PRIVATE_KEY" || (echo "SSH_PRIVATE_KEY file does not exist" && exit 1)
     - chmod 400 "$SSH_PRIVATE_KEY"
     - ssh-add "$SSH_PRIVATE_KEY"
 
