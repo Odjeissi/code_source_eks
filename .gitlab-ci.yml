@@ -75,40 +75,40 @@ build_docker:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-# dev_deploy:
-#   image: alpine:latest
-#   stage: deploy
-#   before_script:
-#     # 1. Install openssh-client and git
-#     - apk add --no-cache openssh-client git yq-go
+dev_deploy:
+  image: alpine:latest
+  stage: deploy
+  before_script:
+    # 1. Install openssh-client and git
+    - apk add --no-cache openssh-client git yq-go
 
-#     # 2. Start the ssh-agent in the background
-#     - eval $(ssh-agent -s)
+    # 2. Start the ssh-agent in the background
+    - eval $(ssh-agent -s)
 
-#     # 3. Load private SSH key
-#     - chmod 400 "$GITHUB_SSH_PRIVATE_KEY"
-#     - ssh-add "$GITHUB_SSH_PRIVATE_KEY"
+    # 3. Load private SSH key
+    - chmod 400 "$GITHUB_SSH_PRIVATE_KEY"
+    - ssh-add "$GITHUB_SSH_PRIVATE_KEY"
 
-#     # 4. Configure SSH known hosts
-#     - mkdir -p ~/.ssh
-#     - chmod 700 ~/.ssh
-#     - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
-#     - chmod 644 ~/.ssh/known_hosts
+    # 4. Configure SSH known hosts
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
 
-#     # 5. Optional: Configure git identity info for interactions
-#     - git config --global user.email "runner@gitlab.com"
-#     - git config --global user.name "GitLab Runner"
+    # 5. Optional: Configure git identity info for interactions
+    - git config --global user.email "runner@gitlab.com"
+    - git config --global user.name "GitLab Runner"
 
-#   script:
-#     - git clone git@github.com:Odjeissi/ks8.git
-#     - cd ks8/kustomize/overlays/dev
-#     - export IMAGE_TAG="$CI_COMMIT_SHORT_SHA"
-#     - yq -i '.images[0].newTag = env(IMAGE_TAG)' kustomization.yaml
-#     - git add kustomization.yaml
-#     - git commit -m "deploy new image tag ${IMAGE_TAG}"
-#     - git push origin main
-#   rules:
-#     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - git clone git@github.com:Odjeissi/ks8.git
+    - cd ks8/kustomize/overlays/dev
+    - export IMAGE_TAG="$CI_COMMIT_SHORT_SHA"
+    - yq -i '.images[0].newTag = env(IMAGE_TAG)' kustomization.yaml
+    - git add kustomization.yaml
+    - git commit -m "deploy new image tag ${IMAGE_TAG}"
+    - git push origin main
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 # prod_deploy:
 #   image: alpine:latest
