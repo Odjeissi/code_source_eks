@@ -1,0 +1,26 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    volumes:
+      - ./prometheus_config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    depends_on:
+      - employee_app
+
+  employee_app:
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile
+    container_name: my_app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    networks:
+      - monitoring
+
+  # --- ISOLATED NETWORKS ---
+networks:
+  monitoring:

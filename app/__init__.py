@@ -3,7 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from app.config import Config
 
+
 db = SQLAlchemy()
+
 
 def create_app():
     load_dotenv()
@@ -12,6 +14,9 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
+
+    from app.metrics import init_metrics
+    init_metrics(app)
 
     from app.routes import main
     app.register_blueprint(main)
